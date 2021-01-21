@@ -16,5 +16,6 @@ jobs:
 workflows:
   version: 2
   buildOne_and_buildTwo:
-    - buildOne
-    - buildTwo
+    jobs:
+      - buildOne
+      - buildTwo
