@@ -1,37 +1,12 @@
 version: 2.1
 jobs:
-  buildOne:
+  build:
     docker:
       - image: cimg/node:14.10.1 # the primary container, where your job's commands are run
     steps:
       - checkout # check out the code in the project directory
-      - run: echo "hello world" # run the `echo` command
-      - run: mkdir -p my_workspace
-      - run: echo "Trying out workspace" > my_workspace/echo-output
-      - persist_to_workspace:
-          root: my_workspace
-          paths:
-            - echo-output
-  buildTwo:
-    docker:
-      - image: cimg/node:14.10.1 # the primary container, where your job's commands are run
-    steps:
-      - checkout # check out the code in the project directory
-      - run: echo "another hello world" # run the `echo` command
-      - attach_workspace:
-          at: my_workspace
-      - run: |
-          if [[ $(cat my_workspace/echo-output) == "Trying out workspace" ]]; then
-            echo "It worked!";
-          else
-            echo "Nope!"; exit 1
-          fi
-
-workflows:
-  version: 2
-  buildOne_and_buildTwo:
-    jobs:
-      - buildOne
-      - buildTwo:
-          requires:
-            - buildOne
+      - run: npm install
+      - save_cache:
+        key: npm-cache{{ .Branch }}-{{ checksum "package.json"}}
+        paths:
+          - node_modules
